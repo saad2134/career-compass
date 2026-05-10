@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useTheme } from "next-themes";
 import { useRouter } from "next/navigation";
+import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { Menu, X, Sun, Moon } from "lucide-react";
 import Image from "next/image";
@@ -53,6 +54,8 @@ export default function NavbarComponent({
 }: NavbarProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isThemeDropdownOpen, setIsThemeDropdownOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const { setTheme, theme } = useTheme();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -68,6 +71,21 @@ export default function NavbarComponent({
     
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsVisible(false);
+      } else {
+        setIsVisible(true);
+      }
+      setLastScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [lastScrollY]);
 
   const handleLogout = () => {
     localStorage.removeItem("student_id");
@@ -93,7 +111,12 @@ export default function NavbarComponent({
   };
 
   return (
-    <div className="fixed inset-x-0 top-4 z-50 w-full px-4">
+    <div
+      className={cn(
+        "fixed inset-x-0 top-0 z-50 w-full px-4 py-4 transition-transform duration-300",
+        isVisible ? "translate-y-0" : "-translate-y-full"
+      )}
+    >
       <div className="relative mx-auto hidden w-full max-w-7xl flex-row items-center justify-between self-start rounded-lg bg-background/80 backdrop-blur-md px-6 py-3 lg:flex dark:bg-background/80 border border-border/20">
         <Link href="/" className="flex items-center gap-2">
           <Image src="/favicon.svg" alt="Logo" width={24} height={24} className="text-primary" />
@@ -152,7 +175,12 @@ export default function NavbarComponent({
       </div>
 
       {/* Mobile Navigation */}
-      <div className="relative top-4 z-50 mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between bg-background/80 backdrop-blur-md px-4 py-3 lg:hidden border border-border/20">
+      <div
+        className={cn(
+          "relative top-0 z-50 mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between bg-background/80 backdrop-blur-md px-4 py-3 lg:hidden border border-border/20 transition-transform duration-300",
+          isVisible ? "translate-y-0" : "-translate-y-full"
+        )}
+      >
         <div className="flex w-full flex-row items-center justify-between px-4">
           <Link href="/" className="flex items-center gap-2">
             <Image src="/favicon.svg" alt="Logo" width={24} height={24} className="text-primary" />
