@@ -12,7 +12,7 @@
 - **Team Members:**
   - Member 1: Abdur Rahman Qasim (Team Lead)
   - Member 2: Fareed Ahmed Owais
-  - Member 3: Mohammed Saad Uddin
+  - Member 3: Saad M.
   - Member 4: Mohammed Khwaja
 
 ---
